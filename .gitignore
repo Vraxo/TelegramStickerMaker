@@ -1,0 +1,27 @@
+# --- Build Outputs ---
+artifacts/
+bin/
+obj/
+[Tt]est[Rr]esults/
+
+# --- IDEs and Editors ---
+.vs/
+.idea/
+.vscode/
+_ReSharper*/
+*.suo
+*.user
+*.userprefs
+*.DotSettings.user
+
+# --- Coalesce Runtime Generation ---
+coalesce.md
+coalesce.toml
+coalesce-run.bat
+coalesce-run.sh
+
+# --- Operating System & Temp Files ---
+.DS_Store
+Thumbs.db
+*.bak
+*.log
