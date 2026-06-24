@@ -13,7 +13,11 @@ internal static class VideoStickerProcessor
     public static void Process(string inputPath, string outputPath)
     {
         double duration = FFProbe.Analyse(inputPath).Duration.TotalSeconds;
-        double speedFactor = duration > MaxDurationSeconds ? duration / MaxDurationSeconds : 1.0;
+
+        double speedFactor = duration > MaxDurationSeconds
+            ? duration / MaxDurationSeconds
+            : 1.0;
+
         string videoFilter = GetVideoFilter(speedFactor);
 
         RunFFmpeg(inputPath, outputPath, videoFilter, compress: false);
@@ -30,13 +34,17 @@ internal static class VideoStickerProcessor
     private static string GetVideoFilter(double speedFactor)
     {
         string scale = $"scale='if(gt(iw,ih),{TargetSize},-2)':'if(gt(iw,ih),-2,{TargetSize})'";
-        string speed = speedFactor > 1.0 ? $",setpts=PTS/{speedFactor:0.0000}" : "";
+
+        string speed = speedFactor > 1.0
+            ? $",setpts=PTS/{speedFactor:0.0000}"
+            : "";
+
         return $"{scale}{speed},fps={MaxFramerate}";
     }
 
     private static void RunFFmpeg(string inputPath, string outputFile, string videoFilter, bool compress)
     {
-        bool isGif = inputPath.EndsWith(".gif", StringComparison.OrdinalIgnoreCase);
+        bool isGif = Path.GetExtension(inputPath).Equals(".gif", StringComparison.OrdinalIgnoreCase);
 
         FFMpegArguments
             .FromFileInput(inputPath, true, options =>
