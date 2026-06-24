@@ -19,9 +19,9 @@ internal static class Log
         AnsiConsole.MarkupLine($"[green]{Markup.Escape(status)}[/] {Markup.Escape(detail)}{FormatSuffix(suffix)}");
     }
 
-    public static void Warning(string message)
+    public static void Warning(string status, string detail, string? suffix = null)
     {
-        AnsiConsole.MarkupLine($"[yellow]{Markup.Escape(message)}[/]");
+        AnsiConsole.MarkupLine($"[yellow]{Markup.Escape(status)}[/] {Markup.Escape(detail)}{FormatSuffix(suffix)}");
     }
 
     public static void Error(string status, string detail, string? suffix = null)

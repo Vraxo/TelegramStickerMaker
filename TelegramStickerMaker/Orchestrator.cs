@@ -6,15 +6,14 @@ internal static class Orchestrator
 {
     public static void Run()
     {
-        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        string inputFolder = Path.Combine(baseDirectory, "Input");
-        string outputFolder = Path.Combine(baseDirectory, "Output");
+        (string inputFolder, string outputFolder) = LoadPaths();
 
         if (!Directory.Exists(inputFolder))
         {
             Directory.CreateDirectory(inputFolder);
-            Log.Info($"Created input folder: '{inputFolder}'");
-            Log.Info("Add your images/videos and run again.");
+            Log.Success("Success:", "Created input folder.");
+            Log.Muted($"Path: {inputFolder}");
+            Log.Info("\nAdd your images/videos to this folder and run again.");
             Log.PromptExit();
             return;
         }
@@ -24,7 +23,8 @@ internal static class Orchestrator
         string[] files = Directory.GetFiles(inputFolder);
         if (files.Length == 0)
         {
-            Log.Warning($"No files found in the Input folder: {inputFolder}");
+            Log.Warning("Warning:", "No files found in the Input folder.");
+            Log.Muted($"Path: {inputFolder}");
             Log.PromptExit();
             return;
         }
@@ -35,6 +35,23 @@ internal static class Orchestrator
 
         Log.Summary(files.Length, processed, skipped, failed);
         Log.PromptExit();
+    }
+
+    private static (string InputFolder, string OutputFolder) LoadPaths()
+    {
+        string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        string configPath = Path.Combine(baseDir, "paths.txt");
+
+        if (!File.Exists(configPath))
+        {
+            File.WriteAllText(configPath, "Input\nOutput");
+        }
+
+        string[] lines = File.ReadAllLines(configPath);
+        string input = lines.Length > 0 ? lines[0].Trim() : "Input";
+        string output = lines.Length > 1 ? lines[1].Trim() : "Output";
+
+        return (Path.GetFullPath(input, baseDir), Path.GetFullPath(output, baseDir));
     }
 
     private static (int Processed, int Skipped, int Failed) ProcessFiles(string[] files, string outputFolder)
@@ -118,7 +135,7 @@ internal static class Orchestrator
         }
         catch (Exception ex)
         {
-            Log.Error("Failed:   ", fileName, $"— {ex.Message}");
+            Log.Error("Failed:", fileName, $"— {ex.Message}");
             return ProcessResult.Failed;
         }
     }
