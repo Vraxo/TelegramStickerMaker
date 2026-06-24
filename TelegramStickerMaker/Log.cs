@@ -16,8 +16,7 @@ internal static class Log
 
     public static void Success(string status, string detail, string? suffix = null)
     {
-        string suffixMarkup = suffix != null ? $" [grey]{Markup.Escape(suffix)}[/]" : "";
-        AnsiConsole.MarkupLine($"[green]{Markup.Escape(status)}[/] {Markup.Escape(detail)}{suffixMarkup}");
+        AnsiConsole.MarkupLine($"[green]{Markup.Escape(status)}[/] {Markup.Escape(detail)}{FormatSuffix(suffix)}");
     }
 
     public static void Warning(string message)
@@ -27,8 +26,7 @@ internal static class Log
 
     public static void Error(string status, string detail, string? suffix = null)
     {
-        string suffixMarkup = suffix != null ? $" [grey]{Markup.Escape(suffix)}[/]" : "";
-        AnsiConsole.MarkupLine($"[red]{Markup.Escape(status)}[/] {Markup.Escape(detail)}{suffixMarkup}");
+        AnsiConsole.MarkupLine($"[red]{Markup.Escape(status)}[/] {Markup.Escape(detail)}{FormatSuffix(suffix)}");
     }
 
     public static void Summary(int total, int processed, int skipped, int failed)
@@ -47,5 +45,10 @@ internal static class Log
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("[grey]Press any key to exit...[/]");
         Console.ReadKey(intercept: true);
+    }
+
+    private static string FormatSuffix(string? suffix)
+    {
+        return suffix != null ? $" [grey]{Markup.Escape(suffix)}[/]" : string.Empty;
     }
 }

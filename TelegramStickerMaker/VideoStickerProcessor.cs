@@ -13,11 +13,7 @@ internal static class VideoStickerProcessor
     public static void Process(string inputPath, string outputPath)
     {
         double duration = FFProbe.Analyse(inputPath).Duration.TotalSeconds;
-
-        double speedFactor = duration > MaxDurationSeconds
-            ? duration / MaxDurationSeconds
-            : 1.0;
-
+        double speedFactor = Math.Max(1.0, duration / MaxDurationSeconds);
         string videoFilter = GetVideoFilter(speedFactor);
 
         RunFFmpeg(inputPath, outputPath, videoFilter, compress: false);
@@ -44,7 +40,7 @@ internal static class VideoStickerProcessor
 
     private static void RunFFmpeg(string inputPath, string outputFile, string videoFilter, bool compress)
     {
-        bool isGif = Path.GetExtension(inputPath).Equals(".gif", StringComparison.OrdinalIgnoreCase);
+        bool isGif = string.Equals(Path.GetExtension(inputPath), ".gif", StringComparison.OrdinalIgnoreCase);
 
         FFMpegArguments
             .FromFileInput(inputPath, true, options =>

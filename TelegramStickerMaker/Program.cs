@@ -39,19 +39,33 @@ AnsiConsole.Status()
     {
         for (int i = 0; i < files.Length; i++)
         {
-            ProcessFile(files[i], i, files.Length, ctx);
+            string filePath = files[i];
+            string fileName = Path.GetFileName(filePath);
+            ctx.Status($"[purple][[{i + 1}/{files.Length}]][/] Processing {Markup.Escape(fileName)}...");
+
+            ProcessResult result = ProcessFile(filePath, outputFolder);
+            switch (result)
+            {
+                case ProcessResult.Processed:
+                    processedCount++;
+                    break;
+                case ProcessResult.Skipped:
+                    skippedCount++;
+                    break;
+                case ProcessResult.Failed:
+                    failedCount++;
+                    break;
+            }
         }
     });
 
 Log.Summary(files.Length, processedCount, skippedCount, failedCount);
 Log.PromptExit();
 
-void ProcessFile(string filePath, int index, int total, StatusContext ctx)
+static ProcessResult ProcessFile(string filePath, string outputFolder)
 {
     string extension = Path.GetExtension(filePath).ToLowerInvariant();
     string fileName = Path.GetFileName(filePath);
-
-    ctx.Status($"[purple][[{index + 1}/{total}]][/] Processing {Markup.Escape(fileName)}...");
 
     bool isStatic = extension is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".webp";
     bool isVideo = extension is ".mp4" or ".gif";
@@ -59,8 +73,7 @@ void ProcessFile(string filePath, int index, int total, StatusContext ctx)
     if (!isStatic && !isVideo)
     {
         Log.Muted($"Skipped (Unsupported extension): {fileName}");
-        skippedCount++;
-        return;
+        return ProcessResult.Skipped;
     }
 
     string targetExt = isStatic ? ".png" : ".webm";
@@ -69,8 +82,7 @@ void ProcessFile(string filePath, int index, int total, StatusContext ctx)
     if (File.Exists(outputPath))
     {
         Log.Muted($"Skipped:   {fileName}");
-        skippedCount++;
-        return;
+        return ProcessResult.Skipped;
     }
 
     try
@@ -86,11 +98,11 @@ void ProcessFile(string filePath, int index, int total, StatusContext ctx)
             long sizeBytes = new FileInfo(outputPath).Length;
             Log.Success("Processed:", fileName, $"({sizeBytes / 1024} KB)");
         }
-        processedCount++;
+        return ProcessResult.Processed;
     }
     catch (Exception ex)
     {
         Log.Error("Failed:   ", fileName, $"— {ex.Message}");
-        failedCount++;
+        return ProcessResult.Failed;
     }
 }
