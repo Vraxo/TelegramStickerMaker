@@ -1,5 +1,13 @@
 ﻿using System.Text;
 
-Console.OutputEncoding = Encoding.UTF8;
+namespace TelegramStickerMaker;
 
-StickerOrchestrator.Run();
+internal sealed class Program
+{
+    public static void Main()
+    {
+        Console.OutputEncoding = Encoding.UTF8;
+
+        Orchestrator.Run();
+    }
+}

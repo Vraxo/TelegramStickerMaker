@@ -56,8 +56,7 @@ internal static class Orchestrator
             string fileName = Path.GetFileName(filePath);
             ctx.Status($"[purple][[{i + 1}/{files.Length}]][/] Processing {Markup.Escape(fileName)}...");
 
-            ProcessResult result = ProcessFile(filePath, outputFolder);
-            switch (result)
+            switch (ProcessFile(filePath, outputFolder))
             {
                 case ProcessResult.Processed:
                     processedCount++;

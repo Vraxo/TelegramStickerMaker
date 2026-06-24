@@ -13,7 +13,7 @@ internal static class VideoStickerProcessor
     public static void Process(string inputPath, string outputPath)
     {
         double duration = FFProbe.Analyse(inputPath).Duration.TotalSeconds;
-        double speedFactor = Math.Max(1.0, duration / MaxDurationSeconds);
+        double speedFactor = double.Max(1.0, duration / MaxDurationSeconds);
         string videoFilter = GetVideoFilter(speedFactor);
 
         RunFFmpeg(inputPath, outputPath, videoFilter, compress: false);
@@ -33,7 +33,7 @@ internal static class VideoStickerProcessor
 
         string speed = speedFactor > 1.0
             ? $",setpts=PTS/{speedFactor:0.0000}"
-            : "";
+            : string.Empty;
 
         return $"{scale}{speed},fps={MaxFramerate}";
     }

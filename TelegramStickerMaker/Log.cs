@@ -49,6 +49,8 @@ internal static class Log
 
     private static string FormatSuffix(string? suffix)
     {
-        return suffix != null ? $" [grey]{Markup.Escape(suffix)}[/]" : string.Empty;
+        return suffix != null
+            ? $" [grey]{Markup.Escape(suffix)}[/]"
+            : string.Empty;
     }
 }
